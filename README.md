@@ -1,2 +1,2 @@
 # httproundtripper
-custom RoundTripper Implements for http.Client 
+custom http.RoundTripper Implements of Golang 
