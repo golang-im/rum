@@ -11,7 +11,8 @@ var _ http.RoundTripper = &MockTransport{}
 // MockTransport transport for mock
 type MockTransport struct {
 	defaultTransport http.RoundTripper
-	mockData         map[string][]byte
+	//TODO cache Method/header/....
+	mockData map[string][]byte
 }
 
 func NewMockTransport() *MockTransport {
@@ -22,15 +23,32 @@ func NewMockTransport() *MockTransport {
 }
 
 func (m *MockTransport) RoundTrip(request *http.Request) (*http.Response, error) {
-	path := request.URL.Path
+	u, err := url.ParseRequestURI(request.URL.RequestURI())
+	if err != nil {
+		return nil, err
+	}
+	path := u.Path
+
+	resp := &http.Response{
+		Status:        "200 OK",
+		StatusCode:    200,
+		Proto:         "HTTP/1.1",
+		ProtoMajor:    1,
+		ProtoMinor:    1,
+		Header:        http.Header{},
+		Request:       request,
+		Close:         true,
+		ContentLength: -1,
+	}
+
 	if data, ok := m.mockData[path]; ok {
-		buf := bytes.NewBuffer(data)
-		return http.ReadResponse(bufio.NewReader(buf), request)
+		resp.Header.Set("Content-Type", "application/json")
+		buf := bytes.NewReader(data)
+		resp.Body = ioutil.NopCloser(buf)
+		return resp, nil
 	}
 
 	return m.defaultTransport.RoundTrip(request)
-
-	return nil, nil
 }
 
 func (m *MockTransport) LoadMockData(path string, data []byte) {
