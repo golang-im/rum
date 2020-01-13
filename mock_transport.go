@@ -1,9 +1,10 @@
-package httptransport
+package rum
 
 import (
-	"bufio"
 	"bytes"
+	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
 var _ http.RoundTripper = &MockTransport{}
