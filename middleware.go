@@ -6,7 +6,9 @@ import "net/http"
 type RoundTripperFunc func(*http.Request) (*http.Response, error)
 
 // RoundTrip
-func (f RoundTripperFunc) RoundTrip(*http.Request) (*http.Response, error)
+func (f RoundTripperFunc) RoundTrip(r *http.Request) (*http.Response, error) {
+	return f(r)
+}
 
 // Middleware defines the RoundTripperFunc Middleware.
 type Middleware func(RoundTripperFunc) RoundTripperFunc

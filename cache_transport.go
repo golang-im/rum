@@ -6,6 +6,8 @@ type CacheMiddleware struct {
 	cache *LRUCache
 }
 
+
+
 func NewCacheMiddleware(maxRequest int) *CacheMiddleware {
 	return &CacheMiddleware{
 		cache: NewLRUCache(maxRequest),
