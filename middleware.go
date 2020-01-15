@@ -15,3 +15,6 @@ type Middleware func(RoundTripperFunc) RoundTripperFunc
 
 // MiddlewareChain defines a Middleware array.
 type MiddlewareChain []Middleware
+
+// Len returns the number of middlewares in the chain.
+func (c MiddlewareChain) Len() int { return len(c) }

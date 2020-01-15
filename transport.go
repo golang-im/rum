@@ -8,13 +8,11 @@ import (
 )
 
 // Transport
-// If Transport.KeyFunc is nil,will use DefaultUniqueKeyFunc.
+// if KeyFunc is nil,will use DefaultUniqueKeyFunc.
 type Transport struct {
 	http.RoundTripper
 	middlewares MiddlewareChain
 	KeyFunc     UniqueKeyFunc
-
-	index int8
 }
 
 // UniqueKeyFunc defines the unique key generator function of request.
@@ -28,26 +26,21 @@ var DefaultUniqueKeyFunc = func(r *http.Request) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
+func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	if t.RoundTripper == nil {
 		t.RoundTripper = http.DefaultTransport
 	}
-	if t.middlewares != nil {
 
-	}
 	return nil, nil
 }
 
-func (t *Transport) reset() {
-	t.RoundTripper = nil
-	t.middlewares = nil
-	t.index = -1
-}
-
-func (t *Transport) Next() {
-	t.index++
-	for t.index < int8(len(t.middlewares)) {
-		t.middlewares[t.index](t.RoundTrip)
-		t.index++
+func (t *Transport) Use(wares ...Middleware) {
+	if t.middlewares != nil {
+		t.middlewares = make([]Middleware, 0)
 	}
+	t.middlewares = append(t.middlewares, wares...)
+	for i := 0; i < t.middlewares.Len(); i++ {
+		t.RoundTripper = t.middlewares[i](t.RoundTrip)
+	}
+	return
 }
