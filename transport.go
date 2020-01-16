@@ -12,7 +12,6 @@ import (
 type Transport struct {
 	http.RoundTripper
 	middlewares MiddlewareChain
-	KeyFunc     UniqueKeyFunc
 }
 
 // UniqueKeyFunc defines the unique key generator function of request.
@@ -30,17 +29,22 @@ func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	if t.RoundTripper == nil {
 		t.RoundTripper = http.DefaultTransport
 	}
-
-	return nil, nil
+	return t.RoundTripper.RoundTrip(r)
 }
 
+//Use adds middleware to the t.middlewares,and wraps t.RoundTripper.
 func (t *Transport) Use(wares ...Middleware) {
 	if t.middlewares != nil {
 		t.middlewares = make([]Middleware, 0)
 	}
+
+	if t.RoundTripper == nil {
+		t.RoundTripper = http.DefaultTransport
+	}
+
 	t.middlewares = append(t.middlewares, wares...)
 	for i := 0; i < t.middlewares.Len(); i++ {
-		t.RoundTripper = t.middlewares[i](t.RoundTrip)
+		t.RoundTripper = t.middlewares[i](t.RoundTripper.RoundTrip)
 	}
 	return
 }
