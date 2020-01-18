@@ -1,8 +1,7 @@
 # httproundtripper
 Golang http.Client transport middleware
 
-- [ ] cache middleware
-- [ ] dnscache middleware
+- [x] cache middleware
 - [ ] mock middleware
 - [ ] ratelimit middleware
 - [ ] throttle middleware

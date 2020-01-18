@@ -5,7 +5,7 @@ import "net/http"
 import "net/http/httputil"
 
 type CacheMiddleware struct {
-	cache   *LRUCache
+	cache   CacheAdapter
 	keyFunc UniqueKeyFunc
 }
 
@@ -23,7 +23,7 @@ var DefaultCacheMiddleware = &CacheMiddleware{
 func (c *CacheMiddleware) Default(next RoundTripperFunc) RoundTripperFunc {
 	return func(r *http.Request) (*http.Response, error) {
 		key := c.keyFunc(r)
-		if val, ok := c.cache.Get(key); ok {
+		if val, err := c.cache.Get(key); err == nil && err != ErrNil {
 			return val.(*http.Response), nil
 		}
 
@@ -38,7 +38,7 @@ func (c *CacheMiddleware) Default(next RoundTripperFunc) RoundTripperFunc {
 			return nil, err
 		}
 
-		c.cache.Add(key, respDup)
+		c.cache.Set(key, respDup)
 
 		return resp, nil
 	}
