@@ -4,6 +4,10 @@ import "net/http"
 
 import "net/http/httputil"
 
+import "bufio"
+
+import "bytes"
+
 type CacheMiddleware struct {
 	cache   CacheAdapter
 	keyFunc UniqueKeyFunc
@@ -24,7 +28,7 @@ func (c *CacheMiddleware) Default(next RoundTripperFunc) RoundTripperFunc {
 	return func(r *http.Request) (*http.Response, error) {
 		key := c.keyFunc(r)
 		if val, err := c.cache.Get(key); err == nil && err != ErrNil {
-			return val.(*http.Response), nil
+			return http.ReadResponse(bufio.NewReader(bytes.NewBuffer(val.([]byte))), r)
 		}
 
 		resp, err := next.RoundTrip(r)

@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-// Transport
-// if KeyFunc is nil,will use DefaultUniqueKeyFunc.
+// Transport implements the http.RoundTripper interface.
+// if RoundTripper is nil,will use http.DefaultTransport.
 type Transport struct {
 	http.RoundTripper
 	middlewares MiddlewareChain
@@ -17,7 +17,7 @@ type Transport struct {
 // UniqueKeyFunc defines the unique key generator function of request.
 type UniqueKeyFunc func(r *http.Request) string
 
-// DefaultUniqueKeyFunc is the default unique key generator function
+// DefaultUniqueKeyFunc is the default unique key generator function.
 var DefaultUniqueKeyFunc = func(r *http.Request) string {
 	h := sha1.New()
 	io.WriteString(h, r.Method)
@@ -25,6 +25,7 @@ var DefaultUniqueKeyFunc = func(r *http.Request) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
+// RoundTrip executes  HTTP transaction wiht roundtriper middlewares.
 func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	if t.RoundTripper == nil {
 		t.RoundTripper = http.DefaultTransport

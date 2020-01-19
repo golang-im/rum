@@ -6,13 +6,16 @@ import (
 )
 
 type AuthenticationMiddleware struct {
+	used bool
 }
 
+// BasicAuthConfig is the config for basicAuth authorization.
 type BasicAuthConfig struct {
 	UserName string
 	Password string
 }
 
+// BasicAuth adds the Authorization header for the basic authorization request.
 func (m *AuthenticationMiddleware) BasicAuth(next RoundTripperFunc, config *BasicAuthConfig) RoundTripperFunc {
 	return func(r *http.Request) (*http.Response, error) {
 		r.Header.Set("Authorization", "Basic "+base64.URLEncoding.EncodeToString([]byte(config.UserName+":"+config.Password)))
@@ -20,31 +23,15 @@ func (m *AuthenticationMiddleware) BasicAuth(next RoundTripperFunc, config *Basi
 	}
 }
 
+//BearerTokenConfig is the config for Bearer token authorization.
 type BearerTokenConfig struct {
 	BearerToken string
 }
 
+// BearerToken adds the Authorization header  for the bearer token authorization request.
 func (m *AuthenticationMiddleware) BearerToken(next RoundTripperFunc, config *BearerTokenConfig) RoundTripperFunc {
 	return func(r *http.Request) (*http.Response, error) {
 		r.Header.Set("Authorization", "Bearer "+config.BearerToken)
-		return next.RoundTrip(r)
-	}
-}
-
-func (m *AuthenticationMiddleware) DigestAuth(next RoundTripperFunc) RoundTripperFunc {
-	return func(r *http.Request) (*http.Response, error) {
-		return next.RoundTrip(r)
-	}
-}
-
-func (m *AuthenticationMiddleware) OAuth1(next RoundTripperFunc) RoundTripperFunc {
-	return func(r *http.Request) (*http.Response, error) {
-		return next.RoundTrip(r)
-	}
-}
-
-func (m *AuthenticationMiddleware) OAuth2(next RoundTripperFunc) RoundTripperFunc {
-	return func(r *http.Request) (*http.Response, error) {
 		return next.RoundTrip(r)
 	}
 }
