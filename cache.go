@@ -1,27 +1,29 @@
 package rum
 
-import "net/http"
-
-import "net/http/httputil"
-
-import "bufio"
-
-import "bytes"
+import (
+	"bufio"
+	"bytes"
+	"net/http"
+	"net/http/httputil"
+	"time"
+)
 
 type CacheMiddleware struct {
 	cache   CacheAdapter
 	keyFunc UniqueKeyFunc
+	expire  int
 }
 
-func NewCacheMiddleware(maxRequest int) *CacheMiddleware {
-	return &CacheMiddleware{
-		cache: NewLRUCache(maxRequest),
-	}
+func NewCacheMiddleware(maxRequest, expire int) *CacheMiddleware {
+	return &CacheMiddleware{}
 }
 
 var DefaultCacheMiddleware = &CacheMiddleware{
-	cache:   NewLRUCache(200),
 	keyFunc: DefaultUniqueKeyFunc,
+}
+
+type CacheMiddlewareConfig struct {
+	Expire time.Duration
 }
 
 func (c *CacheMiddleware) Default(next RoundTripperFunc) RoundTripperFunc {
@@ -42,7 +44,7 @@ func (c *CacheMiddleware) Default(next RoundTripperFunc) RoundTripperFunc {
 			return nil, err
 		}
 
-		c.cache.Set(key, respDup)
+		c.cache.Set(key, respDup, c.expire)
 
 		return resp, nil
 	}
