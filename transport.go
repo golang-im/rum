@@ -25,6 +25,11 @@ var DefaultUniqueKeyFunc = func(r *http.Request) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
+// SetUniqueKeyFunc sets the DefaultUniqueKeyFunc to the given function.
+func SetUniqueKeyFunc(f UniqueKeyFunc) {
+	DefaultUniqueKeyFunc = f
+}
+
 // RoundTrip executes  HTTP transaction wiht roundtriper middlewares.
 func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	if t.RoundTripper == nil {

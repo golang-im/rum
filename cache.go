@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// CacheMiddleware cached the http.Response.
 type CacheMiddleware struct {
 	cache   CacheAdapter
 	keyFunc UniqueKeyFunc
