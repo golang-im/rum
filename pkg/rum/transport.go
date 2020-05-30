@@ -15,7 +15,24 @@ type Transport struct {
 // RequestHash hashes the request for identifying a unique request.
 type RequestHash func(r *http.Request) string
 
+<<<<<<< HEAD:pkg/rum/transport.go
 // RoundTrip executes  HTTP transaction with roundtriper middlewares.
+=======
+// DefaultUniqueKeyFunc is the default unique key generator function.
+var DefaultUniqueKeyFunc = func(r *http.Request) string {
+	h := sha1.New()
+	io.WriteString(h, r.Method)
+	io.WriteString(h, r.RequestURI)
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+// SetUniqueKeyFunc sets the DefaultUniqueKeyFunc to the given function.
+func SetUniqueKeyFunc(f UniqueKeyFunc) {
+	DefaultUniqueKeyFunc = f
+}
+
+// RoundTrip executes  HTTP transaction wiht roundtriper middlewares.
+>>>>>>> 9390037ff85e785e2929d7d776aaaacce9d24882:transport.go
 func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	if t.RoundTripper == nil {
 		t.RoundTripper = http.DefaultTransport
