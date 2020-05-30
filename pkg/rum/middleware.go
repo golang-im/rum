@@ -5,7 +5,7 @@ import "net/http"
 // RoundTripperFunc defines the RoundTrip func used by http.RoundTripper.
 type RoundTripperFunc func(*http.Request) (*http.Response, error)
 
-// RoundTrip
+// RoundTrip executes  HTTP transaction.
 func (f RoundTripperFunc) RoundTrip(r *http.Request) (*http.Response, error) {
 	return f(r)
 }

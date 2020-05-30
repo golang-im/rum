@@ -1,4 +1,4 @@
-package rum
+package middleware
 
 import "time"
 
