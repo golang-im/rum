@@ -20,6 +20,9 @@ func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	if t.RoundTripper == nil {
 		t.RoundTripper = http.DefaultTransport
 	}
+	if _, ok := t.RoundTripper.(*http.Transport); ok {
+
+	}
 
 	return t.RoundTripper.RoundTrip(r)
 }

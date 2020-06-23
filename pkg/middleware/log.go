@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/YouEclipse/rum/pkg/rum"
@@ -11,7 +12,7 @@ import (
 type LoggerMiddleware struct {
 	requestFunc  func(req *http.Request) []byte
 	responseFunc func(res *http.Response) []byte
-	logger       io.Writer
+	loggerWriter io.Writer
 }
 
 // NewLoggerMiddleware returns a new LoggerMiddleware with options.
@@ -20,15 +21,19 @@ func NewLoggerMiddleware(options ...LoggerOption) *LoggerMiddleware {
 	for _, optFunc := range options {
 		optFunc(m)
 	}
+	if m.loggerWriter == nil {
+		m = log.Writer()
+	}
 	return nil
 }
 
 // LoggerOption defines the option function for LoggerMiddleware.
 type LoggerOption func(*LoggerMiddleware)
 
-func LoggerOptionLogger(w io.Writer) LoggerOption {
+//
+func LoggerOptionLoggerWriter(w io.Writer) LoggerOption {
 	return func(m *LoggerMiddleware) {
-		m.logger = w
+		m.loggerWriter = w
 	}
 }
 
