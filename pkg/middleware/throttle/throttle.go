@@ -1,4 +1,4 @@
-package middleware
+package throttle
 
 import "time"
 
