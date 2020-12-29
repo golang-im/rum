@@ -22,7 +22,7 @@ func NewLoggerMiddleware(options ...LoggerOption) *LoggerMiddleware {
 		optFunc(m)
 	}
 	if m.loggerWriter == nil {
-		m = log.Writer()
+		m.loggerWriter = log.Writer()
 	}
 	return nil
 }
